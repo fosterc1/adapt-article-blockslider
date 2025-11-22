@@ -49,12 +49,20 @@ Only one navigation element (Arrows or Tabs) should be active at any one time.
 The **Article Block Slider** and **Quicknav** extensions don't interact well together when the **Article Block Slider** is the last article on a page with an enabled **Quicknav.**  
 
 ----------------------------
-**Version number:**  4.0.0  
+**Version number:**  4.0.1  
 **Framework versions:**  >=5.53.5  
 **Author / maintainer:** Kineo  
 **Accessibility support:** WAI AA  
 **RTL support:** Partial (RTL scrolling supported)  
 **Cross-platform coverage:** Chrome, Firefox, Safari, Edge
+
+## Version 4.0.1 Changes
+
+- **Fixed**: Replaced deprecated `Adapt` namespace accessors with direct module imports
+  - `Adapt.wait` → direct `wait` import from `core/js/wait`
+  - `Adapt.a11y` → direct `a11y` import from `core/js/a11y`
+  - `Adapt.device` → direct `device` import from `core/js/device`
+- **Improved**: Eliminates console warnings about deprecated API usage
 
 ## Version 4.0.0 Changes
 
