@@ -1,20 +1,16 @@
-define([
-  'core/js/adapt'
-], function(Adapt) {
+import Adapt from 'core/js/adapt';
 
-  var BlockSliderModel = {
+const BlockSliderModel = {
 
-    isBlockSliderEnabled: function() {
-      var config = this.get('_articleBlockSlider');
-      if (!config || !config._isEnabled || (config._isDisabledWhenAccessibilityActive && Adapt.accessibility.isActive())) {
-        return false;
-      }
-
-      return true;
+  isBlockSliderEnabled() {
+    const config = this.get('_articleBlockSlider');
+    if (!config || !config._isEnabled || (config._isDisabledWhenAccessibilityActive && Adapt.a11y.isEnabled())) {
+      return false;
     }
 
-  };
+    return true;
+  }
 
-  return BlockSliderModel;
+};
 
-});
+export default BlockSliderModel;
