@@ -44,11 +44,11 @@ const BlockSliderView = {
     },
 
     _blockSliderSetupTouchConfiguration() {
-      // Get merged config (article settings with course defaults as fallback)
-      const config = this.model.getBlockSliderConfig ? this.model.getBlockSliderConfig() : this.model.get('_articleBlockSlider');
-      // Store merged config for use throughout the view
+      // Get article config
+      const config = this.model.get('_articleBlockSlider');
+      // Store config for use throughout the view
       this._blockSliderConfig = config;
-      // Set swipe sensitivity from merged config
+      // Set swipe sensitivity from config
       this._minSwipeDistance = config._swipeSensitivity || 50;
       // Check if touch/swipe is enabled
       this._enableTouchSwipe = config._enableTouchSwipe !== false;
