@@ -8,9 +8,18 @@ const BlockSliderView = {
 
     _isReady: false,
     _disableAnimationOnce: false,
+    _touchStartX: 0,
+    _touchStartY: 0,
+    _touchEndX: 0,
+    _touchEndY: 0,
+    _isSwiping: false,
+    _minSwipeDistance: 50, // Minimum distance for a swipe (in pixels)
 
     events: {
-      'click [data-block-slider]': '_onBlockSliderClick'
+      'click [data-block-slider]': '_onBlockSliderClick',
+      'touchstart .js-abs-slide-container': '_onTouchStart',
+      'touchmove .js-abs-slide-container': '_onTouchMove',
+      'touchend .js-abs-slide-container': '_onTouchEnd'
     },
 
     preRender() {
@@ -26,11 +35,20 @@ const BlockSliderView = {
 
     _blockSliderPreRender() {
       this._blockSliderSetupEventListeners();
+      this._blockSliderSetupTouchConfiguration();
       // Create a promise that will be resolved when ready
       this._readyPromise = new Promise(resolve => {
         this.resolveQueue = resolve;
       });
       wait.queue(this._readyPromise);
+    },
+
+    _blockSliderSetupTouchConfiguration() {
+      const config = this.model.get('_articleBlockSlider');
+      // Set swipe sensitivity from config, or use default
+      this._minSwipeDistance = config._swipeSensitivity || 50;
+      // Check if touch/swipe is enabled (default to true for backward compatibility)
+      this._enableTouchSwipe = config._enableTouchSwipe !== false;
     },
 
     _blockSliderSetupEventListeners() {
@@ -195,6 +213,82 @@ const BlockSliderView = {
           break;
       }
 
+    },
+
+    _onTouchStart(event) {
+      // Check if touch is enabled and only handle on enabled screen sizes
+      if (!this._enableTouchSwipe || !this._blockSliderIsEnabledOnScreenSizes()) return;
+
+      const touch = event.originalEvent.touches[0];
+      this._touchStartX = touch.clientX;
+      this._touchStartY = touch.clientY;
+      this._isSwiping = true;
+    },
+
+    _onTouchMove(event) {
+      if (!this._enableTouchSwipe || !this._isSwiping || !this._blockSliderIsEnabledOnScreenSizes()) return;
+
+      const touch = event.originalEvent.touches[0];
+      this._touchEndX = touch.clientX;
+      this._touchEndY = touch.clientY;
+
+      // Calculate the difference
+      const diffX = this._touchStartX - this._touchEndX;
+      const diffY = this._touchStartY - this._touchEndY;
+
+      // If vertical swipe is more significant than horizontal, don't interfere with scrolling
+      if (Math.abs(diffY) > Math.abs(diffX)) {
+        this._isSwiping = false;
+        return;
+      }
+
+      // Prevent default scrolling when horizontal swipe is detected
+      if (Math.abs(diffX) > 10) {
+        event.preventDefault();
+      }
+    },
+
+    _onTouchEnd(event) {
+      if (!this._enableTouchSwipe || !this._isSwiping || !this._blockSliderIsEnabledOnScreenSizes()) {
+        this._isSwiping = false;
+        return;
+      }
+
+      const diffX = this._touchStartX - this._touchEndX;
+      const diffY = this._touchStartY - this._touchEndY;
+
+      // Check if horizontal swipe is more significant than vertical
+      if (Math.abs(diffX) < Math.abs(diffY)) {
+        this._isSwiping = false;
+        return;
+      }
+
+      // Check if swipe distance meets minimum threshold
+      if (Math.abs(diffX) < this._minSwipeDistance) {
+        this._isSwiping = false;
+        return;
+      }
+
+      // Determine swipe direction
+      const isRTL = Adapt.config.get('_defaultDirection') === 'rtl';
+      
+      if (diffX > 0) {
+        // Swiped left (or right in RTL)
+        if (isRTL) {
+          this._blockSliderMoveLeft();
+        } else {
+          this._blockSliderMoveRight();
+        }
+      } else {
+        // Swiped right (or left in RTL)
+        if (isRTL) {
+          this._blockSliderMoveRight();
+        } else {
+          this._blockSliderMoveLeft();
+        }
+      }
+
+      this._isSwiping = false;
     },
 
     _blockSliderMoveLeft() {

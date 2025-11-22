@@ -100,6 +100,22 @@
                   "inputType": "Number",
                   "validators": ["number"],
                   "help": "Sets a minimum height on the .article-block-slider container class."
+                },
+                "_enableTouchSwipe": {
+                  "type": "boolean",
+                  "default": true,
+                  "title": "Enable Touch/Swipe Navigation",
+                  "inputType": "Checkbox",
+                  "validators": [],
+                  "help": "Enables swipe gestures on touch devices to navigate between blocks. Users can swipe left/right to move through blocks."
+                },
+                "_swipeSensitivity": {
+                  "type": "number",
+                  "default": 50,
+                  "title": "Swipe Sensitivity (pixels)",
+                  "inputType": "Number",
+                  "validators": ["number"],
+                  "help": "Minimum distance in pixels required for a swipe gesture to be recognized. Lower values make swiping more sensitive. Default is 50 pixels."
                 }
               }
             }

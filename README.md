@@ -42,6 +42,22 @@ The attributes listed below are used in *articles.json* to configure **Article B
 
 >**_minHeight** (number): Sets a minimum height on the `.article-block-slider` container class.
 
+>**_enableTouchSwipe** (boolean): Enables or disables touch/swipe navigation on touch devices. When enabled, users can swipe left or right to navigate between blocks. Acceptable values are `true` and `false`. Default is `true`.
+
+>**_swipeSensitivity** (number): Sets the minimum distance in pixels required for a swipe gesture to be recognized. Lower values make swiping more sensitive, higher values require longer swipes. Default is `50` pixels.
+
+## Touch & Swipe Support
+
+The Article Block Slider now includes full support for touch gestures on mobile and tablet devices:
+
+- **Swipe Navigation**: Users can swipe left or right to navigate between blocks
+- **Smart Detection**: Automatically distinguishes between horizontal swipes (navigation) and vertical swipes (scrolling)
+- **Configurable Sensitivity**: Adjust swipe distance threshold to suit your content
+- **RTL Support**: Swipe directions automatically reverse in right-to-left languages
+- **Screen Size Aware**: Touch support respects the `_isEnabledOnScreenSizes` setting
+
+Touch gestures work alongside traditional button navigation, giving users multiple ways to interact with the slider.
+
 ## Limitations
  
 Only one navigation element (Arrows or Tabs) should be active at any one time.  
@@ -49,12 +65,24 @@ Only one navigation element (Arrows or Tabs) should be active at any one time.
 The **Article Block Slider** and **Quicknav** extensions don't interact well together when the **Article Block Slider** is the last article on a page with an enabled **Quicknav.**  
 
 ----------------------------
-**Version number:**  4.0.1  
+**Version number:**  4.1.0  
 **Framework versions:**  >=5.53.5  
 **Author / maintainer:** Kineo  
 **Accessibility support:** WAI AA  
-**RTL support:** Partial (RTL scrolling supported)  
-**Cross-platform coverage:** Chrome, Firefox, Safari, Edge
+**RTL support:** Yes (RTL scrolling and swipe directions)  
+**Touch support:** Yes (Swipe gestures for mobile/tablet)  
+**Cross-platform coverage:** Chrome, Firefox, Safari, Edge, iOS Safari, Android Chrome
+
+## Version 4.1.0 Changes
+
+- **New**: Touch/swipe navigation support for mobile and tablet devices
+  - Swipe left/right to navigate between blocks
+  - Smart gesture detection (distinguishes horizontal swipes from scrolling)
+  - Configurable swipe sensitivity via `_swipeSensitivity` option
+  - Can be disabled via `_enableTouchSwipe` option
+  - Full RTL support with automatic direction reversal
+- **Improved**: Enhanced mobile/tablet user experience
+- **Improved**: Better cross-platform touch device compatibility
 
 ## Version 4.0.1 Changes
 
