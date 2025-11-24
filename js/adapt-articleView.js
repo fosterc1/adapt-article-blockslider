@@ -57,7 +57,6 @@ const BlockSliderView = {
     _blockSliderSetupEventListeners() {
 
       this._blockSliderResizeHeight = this._blockSliderResizeHeight.bind(this);
-      this._onOrientationChange = this._onOrientationChange.bind(this);
 
       this.listenTo(Adapt, {
         'device:resize': this._onBlockSliderResize,
@@ -72,13 +71,7 @@ const BlockSliderView = {
       // Duration will be set after config is loaded
       this._blockSliderHideOthers = _.debounce(this._blockSliderHideOthers.bind(this), 200);
 
-      // Add orientation change listener for mobile devices
-      if (window.screen && window.screen.orientation) {
-        window.screen.orientation.addEventListener('change', this._onOrientationChange);
-      } else {
-        // Fallback for older browsers
-        $(window).on('orientationchange', this._onOrientationChange);
-      }
+      // Removed native orientationchange listener - Adapt's device:changed event handles this
 
     },
 
@@ -440,40 +433,7 @@ const BlockSliderView = {
       }
     },
 
-    _onOrientationChange() {
-      // On orientation change, we need to delay slightly to allow the browser
-      // to complete the orientation change and recalculate dimensions
-      try {
-        _.delay(() => {
-          try {
-            // Force a full recalculation of all dimensions
-            this._blockSliderResizeWidth(false);
-            _.defer(() => {
-              try {
-                // Height calculation needs the width to be set first
-                this._blockSliderResizeHeight(false);
-                _.defer(() => {
-                  try {
-                    // Scroll positioning needs both width and height
-                    this._blockSliderScrollToCurrent(false);
-                    this._blockSliderResizeTab();
-                    // No window resize trigger needed - Adapt's device:changed event handles component updates
-                  } catch (error) {
-                    console.error('BlockSlider: Error in orientation change (scroll/tab resize):', error);
-                  }
-                });
-              } catch (error) {
-                console.error('BlockSlider: Error in orientation change (height resize):', error);
-              }
-            });
-          } catch (error) {
-            console.error('BlockSlider: Error in orientation change (width resize):', error);
-          }
-        }, 300); // 300ms delay to ensure orientation change is complete
-      } catch (error) {
-        console.error('BlockSlider: Error in _onOrientationChange:', error);
-      }
-    },
+    // Removed _onOrientationChange() - no longer needed, device:changed event handles orientation changes
 
     _blockSliderResizeHeight(animate) {
       try {
@@ -645,13 +605,7 @@ const BlockSliderView = {
     _blockSliderRemoveEventListeners() {
       this.$('.component').off('resize', this._blockSliderResizeHeight);
       this.stopListening(Adapt, 'device:changed', this._onBlockSliderDeviceChanged);
-      
-      // Remove orientation change listeners
-      if (window.screen && window.screen.orientation) {
-        window.screen.orientation.removeEventListener('change', this._onOrientationChange);
-      } else {
-        $(window).off('orientationchange', this._onOrientationChange);
-      }
+      // Removed native orientationchange listener cleanup - no longer needed
     },
 
     // Helper function for image loading (replaces deprecated .imageready())

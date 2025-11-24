@@ -5,6 +5,37 @@ All notable changes to the Article Block Slider extension will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.6] - 2025-11-24
+
+### Fixed
+- **CRITICAL: Removed native orientationchange listener entirely**
+  - Eliminated redundant `orientationchange` event listener that was causing duplicate processing
+  - Removed `_onOrientationChange()` method completely
+  - Fixed page refresh issue that occurred AFTER navigating to BlockSlider articles on iPhone
+  - Now relies solely on Adapt Framework's `device:changed` event for all orientation handling
+  
+### Root Cause
+- BlockSlider was adding its own native `orientationchange` listener (lines 76-80)
+- This listener triggered dimension recalculations with 300ms delay
+- These recalculations happened **in addition to** the `device:changed` event processing
+- Result: **Duplicate processing** = page refresh appearance
+- The issue only appeared after visiting a BlockSlider article because the listener was added during article initialization
+
+### Solution
+- Removed ALL native orientationchange handling code:
+  - Removed `orientationchange` event listener registration
+  - Removed `_onOrientationChange()` method (34 lines deleted)
+  - Removed `.bind()` for `_onOrientationChange`
+  - Removed orientation listener cleanup code
+- BlockSlider now responds ONLY to Adapt's `device:changed` event via `_onBlockSliderDeviceChanged()`
+- This aligns with v4.3.5's philosophy: **trust the framework**
+
+### Technical Details
+- Deleted 40+ lines of redundant orientation handling code
+- `device:changed` event already provides all necessary orientation change notifications
+- No functionality lost - `_onBlockSliderDeviceChanged()` handles all screen size changes
+- Eliminates timing conflicts and duplicate processing
+
 ## [4.3.5] - 2025-11-24
 
 ### Fixed
