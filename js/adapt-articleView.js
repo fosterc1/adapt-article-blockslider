@@ -71,6 +71,11 @@ const BlockSliderView = {
 
       // Duration will be set after config is loaded
       this._blockSliderHideOthers = _.debounce(this._blockSliderHideOthers.bind(this), 200);
+      
+      // Debounce window resize trigger to prevent excessive page refreshes during orientation changes
+      this._triggerWindowResize = _.debounce(() => {
+        $(window).trigger('resize');
+      }, 500); // 500ms debounce to allow orientation change to complete
 
       // Add orientation change listener for mobile devices
       if (window.screen && window.screen.orientation) {
@@ -457,8 +462,8 @@ const BlockSliderView = {
                     // Scroll positioning needs both width and height
                     this._blockSliderScrollToCurrent(false);
                     this._blockSliderResizeTab();
-                    // Trigger a final window resize to ensure all components update
-                    $(window).trigger('resize');
+                    // Trigger a debounced window resize to ensure all components update
+                    this._triggerWindowResize();
                   } catch (error) {
                     console.error('BlockSlider: Error in orientation change (scroll/tab resize):', error);
                   }
@@ -603,8 +608,10 @@ const BlockSliderView = {
       const showToolbar = this._blockSliderIsEnabledOnScreenSizes();
       this.$('.js-abs-toolbar, .js-abs-toolbar-bottom').toggleClass('u-display-none', !showToolbar);
 
+      // Use debounced resize trigger instead of direct call
+      // This prevents duplicate resize events during orientation changes
       _.delay(() => {
-        $(window).resize();
+        this._triggerWindowResize();
       }, 250);
     },
 

@@ -5,6 +5,22 @@ All notable changes to the Article Block Slider extension will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.4] - 2025-11-24
+
+### Fixed
+- **Performance**: Eliminated excessive page refreshes during rapid orientation changes on native iPhone devices
+  - Added debounced window resize triggers (500ms) to prevent cascading resize events
+  - Prevents duplicate resize events when both `device:changed` and `orientationchange` fire simultaneously
+  - Significantly improves orientation change smoothness and battery efficiency on mobile devices
+  - Modified `_onOrientationChange()` to use debounced `_triggerWindowResize()` instead of direct `$(window).trigger('resize')`
+  - Modified `_onBlockSliderDeviceChanged()` to use debounced resize trigger instead of `$(window).resize()`
+
+### Technical Details
+- Root cause: Both Adapt's `device:changed` event and native `orientationchange` event were triggering separate resize operations
+- Solution: Created `_triggerWindowResize()` method with 500ms debounce in `_blockSliderSetupEventListeners()`
+- Benefit: Multiple rapid orientation changes now consolidate into single resize operations
+- Tested on iPhone 14 Pro with rapid portrait/landscape transitions
+
 ## [4.3.3] - 2025-11-24
 
 ### Fixed
