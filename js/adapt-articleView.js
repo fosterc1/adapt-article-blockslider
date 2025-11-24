@@ -57,6 +57,7 @@ const BlockSliderView = {
     _blockSliderSetupEventListeners() {
 
       this._blockSliderResizeHeight = this._blockSliderResizeHeight.bind(this);
+      this._onOrientationChange = this._onOrientationChange.bind(this);
 
       this.listenTo(Adapt, {
         'device:resize': this._onBlockSliderResize,
@@ -70,6 +71,14 @@ const BlockSliderView = {
 
       // Duration will be set after config is loaded
       this._blockSliderHideOthers = _.debounce(this._blockSliderHideOthers.bind(this), 200);
+
+      // Add orientation change listener for mobile devices
+      if (window.screen && window.screen.orientation) {
+        window.screen.orientation.addEventListener('change', this._onOrientationChange);
+      } else {
+        // Fallback for older browsers
+        $(window).on('orientationchange', this._onOrientationChange);
+      }
 
     },
 
@@ -407,6 +416,26 @@ const BlockSliderView = {
       this._blockSliderResizeTab();
     },
 
+    _onOrientationChange() {
+      // On orientation change, we need to delay slightly to allow the browser
+      // to complete the orientation change and recalculate dimensions
+      _.delay(() => {
+        // Force a full recalculation of all dimensions
+        this._blockSliderResizeWidth(false);
+        _.defer(() => {
+          // Height calculation needs the width to be set first
+          this._blockSliderResizeHeight(false);
+          _.defer(() => {
+            // Scroll positioning needs both width and height
+            this._blockSliderScrollToCurrent(false);
+            this._blockSliderResizeTab();
+            // Trigger a final window resize to ensure all components update
+            $(window).trigger('resize');
+          });
+        });
+      }, 300); // 300ms delay to ensure orientation change is complete
+    },
+
     _blockSliderResizeHeight(animate) {
       if (!this._isReady) animate = false;
       const $container = this.$el.find('.js-abs-slide-container');
@@ -504,10 +533,17 @@ const BlockSliderView = {
 
       const $container = this.$el.find('.js-abs-slide-container');
 
-      $blocks.css('width', $container.width()+'px');
+      // Force a reflow to ensure we get accurate measurements after orientation change
+      $container[0].offsetHeight; // Trigger reflow
+      
+      const containerWidth = $container.width();
+      $blocks.css('width', containerWidth + 'px');
 
+      // Force another reflow after setting block widths
+      $blocks[0].offsetHeight; // Trigger reflow
+      
       const blockWidth = $($blocks[0]).outerWidth();
-      const totalWidth = $blocks.length * (blockWidth);
+      const totalWidth = $blocks.length * blockWidth;
 
       $blockContainer.width(totalWidth + 'px');
 
@@ -563,6 +599,13 @@ const BlockSliderView = {
     _blockSliderRemoveEventListeners() {
       this.$('.component').off('resize', this._blockSliderResizeHeight);
       this.stopListening(Adapt, 'device:changed', this._onBlockSliderDeviceChanged);
+      
+      // Remove orientation change listeners
+      if (window.screen && window.screen.orientation) {
+        window.screen.orientation.removeEventListener('change', this._onOrientationChange);
+      } else {
+        $(window).off('orientationchange', this._onOrientationChange);
+      }
     },
 
     // Helper function for image loading (replaces deprecated .imageready())

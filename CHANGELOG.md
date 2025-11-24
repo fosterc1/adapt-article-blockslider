@@ -5,6 +5,23 @@ All notable changes to the Article Block Slider extension will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.2] - 2025-01-24
+
+### Fixed
+- **Orientation Change on Touch Devices**: Fixed background/container not resizing correctly when rotating between landscape and portrait orientations on mobile devices
+  - Added dedicated `orientationchange` event listener for mobile devices
+  - Improved resize sequencing with proper delays to account for browser orientation transition
+  - Added forced reflows to ensure accurate dimension measurements after orientation changes
+  - Ensured width is recalculated before height, and scroll positioning is updated last
+- **Resize Calculation**: Enhanced `_blockSliderResizeWidth()` to force DOM reflows for accurate measurements
+
+### Technical Details
+- Modern browsers: Uses `screen.orientation` API with `change` event
+- Legacy browsers: Falls back to `orientationchange` event on window
+- 300ms delay after orientation change to allow browser to complete transition
+- Sequential resize operations with `_.defer()` to maintain proper calculation order
+- Proper cleanup of orientation listeners in `_blockSliderRemoveEventListeners()`
+
 ## [4.3.1] - 2025-01-22
 
 ### Changed
