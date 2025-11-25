@@ -13,10 +13,16 @@ const BlockSliderView = {
     _touchEndX: 0,
     _touchEndY: 0,
     _isSwiping: false,
+    _buttonTouchMoved: false,
+    _buttonTouchStartX: 0,
+    _buttonTouchStartY: 0,
     _minSwipeDistance: 50, // Minimum distance for a swipe (in pixels)
 
     events: {
       'click [data-block-slider]': '_onBlockSliderClick',
+      'touchstart [data-block-slider]': '_onBlockSliderButtonTouchStart',
+      'touchmove [data-block-slider]': '_onBlockSliderButtonTouchMove',
+      'touchend [data-block-slider]': '_onBlockSliderButtonTouch',
       'touchstart .js-abs-slide-container': '_onTouchStart',
       'touchmove .js-abs-slide-container': '_onTouchMove',
       'touchend .js-abs-slide-container': '_onTouchEnd'
@@ -85,7 +91,7 @@ const BlockSliderView = {
 
     },
 
-    // Override delegateEvents to add passive flag to touch events
+    // Override delegateEvents to add passive flag to touch events for better performance
     delegateEvents(events) {
       AdaptArticleView.prototype.delegateEvents.call(this, events);
       
@@ -102,6 +108,22 @@ const BlockSliderView = {
           elem.addEventListener('touchstart', this._onTouchStart.bind(this), { passive: true });
           elem.addEventListener('touchmove', this._onTouchMove.bind(this), { passive: false }); // false because we preventDefault
         }
+      }
+
+      // Ensure button touch events use appropriate settings
+      const $buttons = this.$('[data-block-slider]');
+      if ($buttons.length) {
+        $buttons.each((index, button) => {
+          // Remove old listeners to avoid duplicates
+          button.removeEventListener('touchstart', this._onBlockSliderButtonTouchStart);
+          button.removeEventListener('touchmove', this._onBlockSliderButtonTouchMove);
+          button.removeEventListener('touchend', this._onBlockSliderButtonTouch);
+          
+          // Add new listeners with proper options
+          button.addEventListener('touchstart', this._onBlockSliderButtonTouchStart.bind(this), { passive: true });
+          button.addEventListener('touchmove', this._onBlockSliderButtonTouchMove.bind(this), { passive: true });
+          button.addEventListener('touchend', this._onBlockSliderButtonTouch.bind(this), { passive: false }); // false so we can preventDefault
+        });
       }
     },
 
@@ -239,20 +261,87 @@ const BlockSliderView = {
 
     },
 
+    _onBlockSliderButtonTouchStart(event) {
+      // Track button touch start for better touch handling
+      const touches = event.touches || (event.originalEvent && event.originalEvent.touches);
+      if (!touches || touches.length === 0) return;
+
+      const touch = touches[0];
+      this._buttonTouchStartX = touch.clientX;
+      this._buttonTouchStartY = touch.clientY;
+      this._buttonTouchMoved = false;
+    },
+
+    _onBlockSliderButtonTouchMove(event) {
+      // Track if the finger moved significantly - if so, don't trigger button action
+      const touches = event.touches || (event.originalEvent && event.originalEvent.touches);
+      if (!touches || touches.length === 0) return;
+
+      const touch = touches[0];
+      const diffX = Math.abs(touch.clientX - this._buttonTouchStartX);
+      const diffY = Math.abs(touch.clientY - this._buttonTouchStartY);
+
+      // If moved more than 10 pixels, consider it a swipe, not a tap
+      if (diffX > 10 || diffY > 10) {
+        this._buttonTouchMoved = true;
+      }
+    },
+
+    _onBlockSliderButtonTouch(event) {
+      // Dedicated touch handler for buttons to ensure they work reliably on touch devices
+      const $target = $(event.currentTarget);
+      
+      // If this button was tapped (not part of a swipe), trigger the action
+      if (!this._buttonTouchMoved) {
+        event.preventDefault();
+        event.stopPropagation(); // Prevent the touch from also triggering swipe navigation
+        
+        const id = $target.attr('data-block-slider');
+
+        switch(id) {
+          case 'left':
+            this._blockSliderMoveLeft();
+            break;
+          case 'index':
+            const index = parseInt($target.attr('data-block-slider-index'));
+            this._blockSliderMoveIndex(index);
+            break;
+          case 'right':
+            this._blockSliderMoveRight();
+            break;
+        }
+      }
+      
+      this._buttonTouchMoved = false;
+    },
+
     _onTouchStart(event) {
       // Check if touch is enabled and only handle on enabled screen sizes
       if (!this._enableTouchSwipe || !this._blockSliderIsEnabledOnScreenSizes()) return;
 
-      const touch = event.originalEvent.touches[0];
+      // Get touches from either jQuery event or native event
+      const touches = event.touches || (event.originalEvent && event.originalEvent.touches);
+      if (!touches || touches.length === 0) return;
+
+      const touch = touches[0];
       this._touchStartX = touch.clientX;
       this._touchStartY = touch.clientY;
+      this._touchEndX = touch.clientX;
+      this._touchEndY = touch.clientY;
       this._isSwiping = true;
     },
 
     _onTouchMove(event) {
       if (!this._enableTouchSwipe || !this._isSwiping || !this._blockSliderIsEnabledOnScreenSizes()) return;
 
-      const touch = event.originalEvent.touches[0];
+      // Get touches from either jQuery event or native event
+      const touches = event.touches || (event.originalEvent && event.originalEvent.touches);
+      if (!touches || touches.length === 0) {
+        this._isSwiping = false;
+        return;
+      }
+
+      const touch = touches[0];
       this._touchEndX = touch.clientX;
       this._touchEndY = touch.clientY;
 
