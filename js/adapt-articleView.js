@@ -91,41 +91,7 @@ const BlockSliderView = {
 
     },
 
-    // Override delegateEvents to add passive flag to touch events for better performance
-    delegateEvents(events) {
-      AdaptArticleView.prototype.delegateEvents.call(this, events);
-      
-      // Re-attach touch events with passive flag for better performance
-      const $container = this.$('.js-abs-slide-container');
-      if ($container.length) {
-        const elem = $container[0];
-        
-        // Remove jQuery-bound touch events
-        $container.off('touchstart touchmove');
-        
-        // Add native event listeners with passive flag
-        if (elem) {
-          elem.addEventListener('touchstart', this._onTouchStart.bind(this), { passive: true });
-          elem.addEventListener('touchmove', this._onTouchMove.bind(this), { passive: false }); // false because we preventDefault
-        }
-      }
 
-      // Ensure button touch events use appropriate settings
-      const $buttons = this.$('[data-block-slider]');
-      if ($buttons.length) {
-        $buttons.each((index, button) => {
-          // Remove old listeners to avoid duplicates
-          button.removeEventListener('touchstart', this._onBlockSliderButtonTouchStart);
-          button.removeEventListener('touchmove', this._onBlockSliderButtonTouchMove);
-          button.removeEventListener('touchend', this._onBlockSliderButtonTouch);
-          
-          // Add new listeners with proper options
-          button.addEventListener('touchstart', this._onBlockSliderButtonTouchStart.bind(this), { passive: true });
-          button.addEventListener('touchmove', this._onBlockSliderButtonTouchMove.bind(this), { passive: true });
-          button.addEventListener('touchend', this._onBlockSliderButtonTouch.bind(this), { passive: false }); // false so we can preventDefault
-        });
-      }
-    },
 
     _blockSliderRender() {
       Adapt.trigger(this.constructor.type + 'View:preRender view:render', this);
