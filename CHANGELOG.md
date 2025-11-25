@@ -5,6 +5,41 @@ All notable changes to the Article Block Slider extension will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.7] - 2025-11-25
+
+### Fixed
+- **Touch Devices: Improved button reliability on touch devices**
+  - Fixed intermittent button behavior when using navigation buttons (arrows/tabs) on touch devices
+  - Added dedicated touch handlers for navigation buttons to properly detect taps vs swipes
+  - Implemented touch movement tracking with 10px threshold to distinguish between taps and drag gestures
+  - Prevented button touch events from triggering swipe navigation (added event.stopPropagation)
+  - Enhanced touch event handling to support both jQuery events and native event sources
+  
+### Root Cause
+- Touch events on buttons were not properly isolated from swipe gesture detection
+- No distinction between quick taps (which should activate buttons) and drag/swipe motions
+- Touch events from native listeners weren't being properly normalized
+- Button touches could accidentally trigger slide container swipe navigation
+
+### Solution
+- Added `_onBlockSliderButtonTouchStart()` to track initial touch position on buttons
+- Added `_onBlockSliderButtonTouchMove()` to monitor finger movement during touch
+- Enhanced `_onBlockSliderButtonTouch()` to only trigger action if movement < 10px (true tap)
+- Updated `delegateEvents()` to properly attach touch listeners with appropriate passive/non-passive flags
+- Touch events now handle both `event.touches` and `event.originalEvent.touches` sources
+
+### Technical Details
+- Movement threshold: 10px - movements beyond this are considered swipes, not taps
+- Button touch events use `event.stopPropagation()` to prevent conflict with container swipe detection
+- Proper initialization of touch coordinate tracking variables (`_buttonTouchStartX`, `_buttonTouchStartY`, `_buttonTouchMoved`)
+- Native event listeners properly attached/removed to prevent duplicates
+
+### User Impact
+- ✅ Navigation buttons now respond reliably to taps on smartphones and tablets
+- ✅ No accidental button activation while swiping through slides
+- ✅ Swipe gestures on content area continue to work normally
+- ✅ Improved touch responsiveness across all mobile devices
+
 ## [4.3.6] - 2025-11-24
 
 ### Fixed

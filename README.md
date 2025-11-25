@@ -2,7 +2,7 @@
 
 [![Adapt Framework Version](https://img.shields.io/badge/adapt%20framework-v5.53.5+-blue.svg)](https://github.com/adaptlearning/adapt_framework)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](https://github.com/fosterc1/adapt-articleBlockSlider/blob/master/LICENSE)
-[![Version](https://img.shields.io/badge/version-4.3.6-orange.svg)](https://github.com/fosterc1/adapt-articleBlockSlider/releases)
+[![Version](https://img.shields.io/badge/version-4.3.7-orange.svg)](https://github.com/fosterc1/adapt-articleBlockSlider/releases)
 [![Accessibility](https://img.shields.io/badge/accessibility-WCAG%202.1%20AA-brightgreen.svg)](#accessibility-compliance)
 [![RTL Support](https://img.shields.io/badge/RTL-supported-success.svg)](#internationalization)
 [![Touch Enabled](https://img.shields.io/badge/touch-enabled-success.svg)](#touch--swipe-support)
@@ -929,14 +929,17 @@ Enable debug mode in `config.json`:
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-### Current Version: 4.3.2
+### Current Version: 4.3.7
 
 **Latest Changes:**
+- **4.3.7**: Fixed intermittent button behavior on touch devices - improved tap vs swipe detection
+- **4.3.6**: Removed native orientationchange listener to prevent duplicate processing
+- **4.3.5**: Eliminated window resize triggers to prevent plugin interaction issues
+- **4.3.4**: Added debounced resize triggers for better orientation change performance
+- **4.3.3**: Fixed console errors in resize handlers
 - **4.3.2**: Fixed orientation change handling on touch devices (background/container resize)
-- **4.3.1**: Changed `_isEnabled` default to false (opt-in behavior) - BREAKING CHANGE
-- **4.3.0**: Stable release with comprehensive documentation and production-ready status
 - Full WCAG 2.1 AA compliance
-- Touch/swipe support with improved orientation handling
+- Touch/swipe support with reliable button handling
 - Modern ES6 codebase for Adapt v5.53.5+
 
 **Previous Versions:**
