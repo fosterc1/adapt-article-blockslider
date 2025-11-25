@@ -8,11 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.3.7] - 2025-11-25
 
 ### Fixed
+- **CRITICAL: Fixed TypeError crash and text not displaying**
+  - Removed problematic `delegateEvents()` override that was causing "Uncaught TypeError: n.apply is not a function"
+  - Fixed issue where text was not displaying in compiled courses
+  - Plugin was completely broken in AAT after v4.3.7 initial release
+  - Root cause: Manual native event listener attachment with `.bind(this)` interfered with Backbone's event delegation
+  - Solution: Let Backbone handle all event delegation through the events object
+  
 - **Touch Devices: Improved button reliability on touch devices**
   - Fixed intermittent button behavior when using navigation buttons (arrows/tabs) on touch devices
   - Added dedicated touch handlers for navigation buttons to properly detect taps vs swipes
   - Implemented touch movement tracking with 10px threshold to distinguish between taps and drag gestures
-  - Prevented button touch events from triggering swipe navigation (added event.stopPropagation)
   - Enhanced touch event handling to support both jQuery events and native event sources
   
 ### Root Cause
