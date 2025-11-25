@@ -929,19 +929,51 @@ Enable debug mode in `config.json`:
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-### Current Version: 4.3.8
+### 🚀 Release Notes
 
-**Latest Changes:**
-- **4.3.8**: Fixed critical TypeError and text not displaying (v4.3.7 hotfix)
-- **4.3.7**: Fixed intermittent button behavior on touch devices - improved tap vs swipe detection
-- **4.3.6**: Removed native orientationchange listener to prevent duplicate processing
-- **4.3.5**: Eliminated window resize triggers to prevent plugin interaction issues
-- **4.3.4**: Added debounced resize triggers for better orientation change performance
-- **4.3.3**: Fixed console errors in resize handlers
-- **4.3.2**: Fixed orientation change handling on touch devices (background/container resize)
-- Full WCAG 2.1 AA compliance
-- Touch/swipe support with reliable button handling
-- Modern ES6 codebase for Adapt v5.53.5+
+**Latest Stable Release: v4.3.8** (2025-11-25)
+
+This is a **critical hotfix release** that resolves complete plugin breakage introduced in v4.3.7. All users should upgrade to v4.3.8 immediately.
+
+**What to Know:**
+- ✅ **v4.3.8**: Fully functional, tested, and production-ready
+- ⛔ **v4.3.7**: Completely broken - causes TypeError and text not displaying
+- ✅ **v4.3.6 and earlier**: Stable, but missing touch button improvements
+
+**Download:** [Get v4.3.8 from Releases](https://github.com/fosterc1/adapt-articleBlockSlider/releases/tag/v4.3.8)
+
+---
+
+### Current Version: 4.3.8 (Stable Release)
+
+> ⚠️ **Important**: Version 4.3.7 was broken and should not be used. Please use v4.3.8 or later.
+
+**What's New in 4.3.8:**
+- **CRITICAL HOTFIX**: Fixed complete plugin breakage from v4.3.7
+  - Resolved "Uncaught TypeError: n.apply is not a function" 
+  - Fixed text not displaying in compiled courses
+  - Restored full functionality in Adapt Authoring Tool
+- **Touch Button Improvements Retained**:
+  - Navigation buttons (arrows/tabs) now respond reliably to taps on touch devices
+  - Implemented tap vs swipe detection (10px movement threshold)
+  - Prevents accidental button activation while swiping through slides
+  - Touch gestures on content area work normally
+
+**Recent Version History:**
+- **4.3.8** (2025-11-25): Critical hotfix - restored full functionality, fixed TypeError
+- **4.3.7** (2025-11-25): ⛔ **BROKEN - DO NOT USE** - Introduced critical bug
+- **4.3.6** (2025-11-24): Removed native orientationchange listener to prevent duplicate processing
+- **4.3.5** (2025-11-24): Eliminated window resize triggers to prevent plugin interaction issues
+- **4.3.4** (2025-11-24): Added debounced resize triggers for better orientation change performance
+- **4.3.3** (2025-11-24): Fixed console errors in resize handlers
+- **4.3.2** (2025-11-24): Fixed orientation change handling on touch devices
+
+**Core Features:**
+- ✅ Full WCAG 2.1 AA compliance
+- ✅ Touch/swipe support with reliable button handling
+- ✅ Modern ES6 codebase for Adapt v5.53.5+
+- ✅ RTL language support
+- ✅ Responsive design across all devices
 
 **Previous Versions:**
 - **4.2.2**: Production-ready release for AAT deployment
